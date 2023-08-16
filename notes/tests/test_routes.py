@@ -17,12 +17,12 @@ class TestRoutes(TestCase):
         cls.author1 = User.objects.create(username='Лев Толстой')
         cls.author2 = User.objects.create(username='Анна Петрова')
         cls.notes1 = Note.objects.create(
-            title='1',
+            title='Заметка1',
             text='Текст2',
             author=cls.author1,
         )
         cls.notes2 = Note.objects.create(
-            title='Zagolovok1',
+            title='Заметка2',
             text='Текст2',
             author=cls.author2,
         )
@@ -41,7 +41,7 @@ class TestRoutes(TestCase):
                 response = self.client.get(url)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_availability_for_notes_view(self):
+    def test_availability_for_notes_modify(self):
         users_statuses = (
             (self.author1, HTTPStatus.OK),
             (self.author2, HTTPStatus.NOT_FOUND),
@@ -51,9 +51,8 @@ class TestRoutes(TestCase):
             self.client.force_login(user)
             # Для каждой пары "пользователь - ожидаемый ответ"
             # перебираем имена тестируемых страниц:
-            for name in ('notes:detail', 'notes:detail'):
+            for name in ('notes:detail', 'notes:edit', 'notes:delete'):
                 with self.subTest(user=user, name=name):
-
-                    url = reverse(name, args=self.notes1.slug,)
+                    url = reverse(name, args=(self.notes1.slug,))
                     response = self.client.get(url)
                     self.assertEqual(response.status_code, status)
